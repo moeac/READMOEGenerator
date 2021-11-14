@@ -1,6 +1,7 @@
-// TODO: Include packages needed for this application
 const fs = require('fs');
 const inquirer = require('inquirer');
+const generateMarkdown = require('./utils/generateMarkdown.js');
+const fileName = 'ProjectReadMe.md'
 
 
 // inquirer questios
@@ -18,7 +19,7 @@ const questions = [
     {
         type: 'input',
         message: "Input installation instructions about the project or preferably how to remove the cover plate of a remo ceiling light, why is it so hard?",
-        name: 'input',
+        name: 'install',
     },
     {
         type: 'input',
@@ -53,22 +54,24 @@ const questions = [
     }
 ];
 
-function readLicense (err, data) {
-    err ? console.error(err) : data = fileName;
+// writes the files using generateMarkdown.js template
+function writeToFile(fileName, data) {
+    fs.writeFile(fileName, generateMarkdown(data), (err) => {
+        err ? console.error(err) : console.log('Project ReadME saved :)')
+    })
 };
 
-fs.readFile('/licenses/apache.txt', 'utf8', readLicense);
-fs.readFile('/licenses/gnu.txt', 'utf8', readLicense);
-fs.readFile('/licenses/mit.txt', 'utf8', readLicense);
-fs.readFile('/licenses/moelicense.txt', 'utf8', readLicense);
-
-// TODO: Create a function to write README file
-function writeToFile(fileName, data) {}
-
-// TODO: Create a function to initialize app
+// runs inquirer questions and writetofile function
 function init() {
     inquirer.prompt(questions)
-}
+    .then((data) => {
+        writeToFile(fileName, data);
+        return data
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+};
 
 // Function call to initialize app
 init();
